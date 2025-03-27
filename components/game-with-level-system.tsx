@@ -76,7 +76,8 @@ export default function GameWithLevelSystem() {
     unicornMode,
 
     // Cat mode
-    catActive,
+    cats,
+    toggleCat,
 
     // Actions
     generateProblem,
@@ -246,7 +247,7 @@ export default function GameWithLevelSystem() {
                   {hiddenSide === "left" ? (
                     showHints ? (
                       // Show hint options instead of input field when hints are active
-                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect === true} />
+                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect !== null} />
                     ) : isCorrect === true ? (
                       // Show fixed box with correct answer when answer is correct
                       <div className="w-16 h-16 rounded-md bg-green-600 flex items-center justify-center text-white text-2xl font-bold border-2 border-green-400">
@@ -273,7 +274,7 @@ export default function GameWithLevelSystem() {
                           placeholder="?"
                           maxLength={2}
                           autoFocus
-                          disabled={isCorrect === true}
+                          disabled={isCorrect !== null}
                         />
                       </motion.div>
                     )
@@ -287,7 +288,7 @@ export default function GameWithLevelSystem() {
                   {hiddenSide === "right" ? (
                     showHints ? (
                       // Show hint options instead of input field when hints are active
-                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect === true} />
+                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect !== null} />
                     ) : isCorrect === true ? (
                       // Show fixed box with correct answer when answer is correct
                       <div className="w-16 h-16 rounded-md bg-green-600 flex items-center justify-center text-white text-2xl font-bold border-2 border-green-400">
@@ -314,7 +315,7 @@ export default function GameWithLevelSystem() {
                           placeholder="?"
                           maxLength={2}
                           autoFocus
-                          disabled={isCorrect === true}
+                          disabled={isCorrect !== null}
                         />
                       </motion.div>
                     )
@@ -528,10 +529,18 @@ export default function GameWithLevelSystem() {
         maxSum={maxSum}
       />
 
-      {/* Magical Cat - Render directly in the component */}
-      {catActive && (
+      {/* Magical Cats - Render all active cats */}
+      {cats.length > 0 && (
         <div className="fixed inset-0 pointer-events-none z-[9999]" style={{ overflow: "hidden" }}>
-          <MagicalCat />
+          {cats.map((cat) => (
+            cat.active && (
+              <MagicalCat
+                key={cat.id}
+                color={cat.color}
+                onToggle={() => toggleCat(cat.id)}
+              />
+            )
+          ))}
         </div>
       )}
     </div>

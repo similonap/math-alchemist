@@ -37,6 +37,13 @@ export interface FluidEffects {
   errorProtection: boolean // Whether errors are protected
 }
 
+// Add cat state interface
+interface CatState {
+  id: string
+  color: string
+  active: boolean
+}
+
 // Add catActive to the GameState interface
 interface GameState {
   // Level system state
@@ -107,7 +114,7 @@ interface GameState {
   unicornMode: boolean
 
   // Cat mode
-  catActive: boolean
+  cats: CatState[]
 
   // Store system
   storeItems: StoreItem[]
@@ -145,7 +152,7 @@ interface GameState {
   getFluidEffectsDescription: () => string
   getRemainingFluidTime: () => number
   toggleUnicornMode: () => void
-  toggleCat: () => void
+  toggleCat: (catId: string) => void
   generateHintOptions: () => void
   selectHintOption: (value: number) => void
   checkAllCombinationsMastered: () => boolean
@@ -226,8 +233,8 @@ export const useGameStore = create<GameState>()(
       // Unicorn mode
       unicornMode: false,
 
-      // Add catActive to the initial state
-      catActive: false,
+      // Cat mode
+      cats: [],
 
       // Store system
       storeItems: [
@@ -289,7 +296,7 @@ export const useGameStore = create<GameState>()(
           description: "A magical cat that runs around your screen while you play",
           price: 100,
           icon: "Sparkles",
-          consumable: false,
+          consumable: true
         },
         {
           id: "diploma",
@@ -851,7 +858,7 @@ export const useGameStore = create<GameState>()(
         const fluidMixExpiry = get().fluidMixExpiry // Keep fluid expiry
         const fluidEffects = get().fluidEffects // Keep fluid effects
         const unicornMode = get().unicornMode // Keep unicorn mode
-        const catActive = get().catActive // Keep cat active state
+        const cats = get().cats // Keep cats
         const combinationStats = get().combinationStats // Keep combination stats
         const diplomas = get().diplomas // Keep diplomas
         const allCombinationsMastered = get().allCombinationsMastered // Keep allCombinationsMastered
@@ -878,7 +885,7 @@ export const useGameStore = create<GameState>()(
           fluidMixExpiry,
           fluidEffects,
           unicornMode,
-          catActive,
+          cats,
           combinationStats, // Keep combination stats
           diplomas,
           allCombinationsMastered,
@@ -978,7 +985,13 @@ export const useGameStore = create<GameState>()(
 
         // Special handling for cat item
         if (item.id === "magical_cat") {
-          set({ catActive: true })
+          const cats = get().cats
+          const newCat: CatState = {
+            id: `cat-${Date.now()}`,
+            color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+            active: true
+          }
+          set({ cats: [...cats, newCat] })
           console.log("Cat activated from purchase")
         }
 
@@ -1035,7 +1048,7 @@ export const useGameStore = create<GameState>()(
         if (item.id === "unicorn") {
           get().toggleUnicornMode()
         } else if (item.id === "magical_cat") {
-          get().toggleCat()
+          get().toggleCat(itemId)
         }
 
         setItemBeingUsed(null)
@@ -1159,9 +1172,13 @@ export const useGameStore = create<GameState>()(
         set((state) => ({ unicornMode: !state.unicornMode }))
       },
 
-      // Add toggleCat function
-      toggleCat: () => {
-        set((state) => ({ catActive: !state.catActive }))
+      // Toggle cat function
+      toggleCat: (catId: string) => {
+        set((state) => ({
+          cats: state.cats.map(cat => 
+            cat.id === catId ? { ...cat, active: !cat.active } : cat
+          )
+        }))
       },
 
       // Mix the selected fluids (consumes vials)
@@ -1476,7 +1493,7 @@ export const useGameStore = create<GameState>()(
         fluidMixExpiry: state.fluidMixExpiry,
         fluidEffects: state.fluidEffects,
         unicornMode: state.unicornMode,
-        catActive: state.catActive,
+        cats: state.cats,
         testedCombinations: state.testedCombinations,
         combinationStats: state.combinationStats, // Add this line to persist combination stats
         diplomas: state.diplomas,

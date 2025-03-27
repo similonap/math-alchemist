@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 
-export function MagicalCat() {
+interface MagicalCatProps {
+  color?: string
+  onToggle?: () => void
+}
+
+export function MagicalCat({ color = "#8b5cf6", onToggle }: MagicalCatProps) {
   const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
   const [target, setTarget] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
   const [isResting, setIsResting] = useState(false)
@@ -120,18 +125,19 @@ export function MagicalCat() {
             viewBox="0 0 60 40"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="drop-shadow-lg"
-            style={{ filter: "drop-shadow(0px 0px 8px rgba(139, 92, 246, 0.7))" }}
+            className="drop-shadow-lg cursor-pointer"
+            style={{ filter: `drop-shadow(0px 0px 8px ${color}80)` }}
+            onClick={onToggle}
           >
             {/* Cat body */}
-            <ellipse cx="30" cy="28" rx="16" ry="12" fill="#8b5cf6" />
+            <ellipse cx="30" cy="28" rx="16" ry="12" fill={color} />
 
             {/* Cat head */}
-            <circle cx="30" cy="16" r="10" fill="#8b5cf6" />
+            <circle cx="30" cy="16" r="10" fill={color} />
 
             {/* Cat ears */}
-            <path d="M22 10L20 2L26 8L22 10Z" fill="#8b5cf6" />
-            <path d="M38 10L40 2L34 8L38 10Z" fill="#8b5cf6" />
+            <path d="M22 10L20 2L26 8L22 10Z" fill={color} />
+            <path d="M38 10L40 2L34 8L38 10Z" fill={color} />
 
             {/* Cat face */}
             <circle cx="26" cy="14" r="1.5" fill="#fff" />
@@ -143,7 +149,7 @@ export function MagicalCat() {
             {/* Cat tail */}
             <motion.path
               d="M46 28C50 28 54 24 54 20"
-              stroke="#8b5cf6"
+              stroke={color}
               strokeWidth="4"
               strokeLinecap="round"
               animate={{

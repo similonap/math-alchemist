@@ -67,14 +67,11 @@ export function MagicStore() {
     unicornMode,
     toggleUnicornMode,
     maxSum,
-    catActive,
     toggleCat,
     addCoins,
     // Add this line with the other store imports
     allCombinationsMastered,
     diplomas,
-    isPouringAnimation,
-    pouringColor,
     getAnimatingFluidColor,
   } = useGameStore()
   const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null)
@@ -181,9 +178,7 @@ export function MagicStore() {
       toggleUnicornMode()
       setTimeout(() => setPurchaseMessage(null), 3000)
     } else if (item.id === "magical_cat") {
-      setPurchaseMessage(catActive ? "Magical Cat is taking a nap!" : "Magical Cat is on the prowl!")
-      toggleCat()
-      setTimeout(() => setPurchaseMessage(null), 3000)
+      
     }
   }
 
@@ -259,7 +254,7 @@ export function MagicStore() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {purchasedItems.map((item) => {
                   const quantity = getItemQuantity(item.id)
-                  const isActive = (item.id === "unicorn" && unicornMode) || (item.id === "magical_cat" && catActive)
+                  const isActive = (item.id === "unicorn" && unicornMode)
 
                   return (
                     <motion.div
@@ -394,7 +389,7 @@ export function MagicStore() {
 
               // For non-consumable items, show "Owned" instead of quantity
               const showOwned =
-                (item.id === "fluid_lab" || item.id === "unicorn" || item.id === "magical_cat") && quantity > 0
+                (item.id === "fluid_lab" || item.id === "unicorn") && quantity > 0
 
               // Special handling for diploma - show button to open dialog instead of buy button
               if (item.id === "diploma") {
@@ -519,22 +514,18 @@ export function MagicStore() {
                     </div>
 
                     {/* Use button for items in inventory */}
-                    {quantity > 0 && !item.autoUse && (item.id === "unicorn" || item.id === "magical_cat") && (
+                    {quantity > 0 && !item.autoUse && (item.id === "unicorn") && (
                       <Button
                         onClick={() => handleUseItem(item)}
                         className={`mt-2 w-full ${
-                          (unicornMode && item.id === "unicorn") || (catActive && item.id === "magical_cat")
+                          (unicornMode && item.id === "unicorn")
                             ? "bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
                             : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
                         } text-white font-medium shadow-md`}
                       >
                         {unicornMode && item.id === "unicorn"
                           ? "Deactivate Unicorns"
-                          : item.id === "unicorn"
-                            ? "Activate Unicorns"
-                            : catActive && item.id === "magical_cat"
-                              ? "Call Cat Back"
-                              : "Release Cat"}
+                          : "Activate Unicorns"}
                       </Button>
                     )}
                   </div>
