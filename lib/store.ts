@@ -157,6 +157,7 @@ interface GameState {
   selectHintOption: (value: number) => void
   checkAllCombinationsMastered: () => boolean
   getAnimatingFluidColor: () => string
+  catchCat: (catId: string) => boolean
 }
 
 export const useGameStore = create<GameState>()(
@@ -1179,6 +1180,27 @@ export const useGameStore = create<GameState>()(
             cat.id === catId ? { ...cat, active: !cat.active } : cat
           )
         }))
+      },
+
+      // Add function to catch a cat
+      catchCat: (catId: string) => {
+        const { cats, coins, inventory } = get()
+        const cat = cats.find(c => c.id === catId)
+        
+        if (!cat) return false
+
+        // Remove the cat and add coins (100 + 5 bonus)
+        set({
+          cats: cats.filter(c => c.id !== catId),
+          coins: coins + 105,
+          // Reduce the inventory count for magical_cat
+          inventory: {
+            ...inventory,
+            magical_cat: (inventory.magical_cat || 0) - 1
+          }
+        })
+
+        return true
       },
 
       // Mix the selected fluids (consumes vials)

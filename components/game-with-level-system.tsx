@@ -34,6 +34,8 @@ export default function GameWithLevelSystem() {
   const [activeView, setActiveView] = useState<"game" | "store" | "progress">("game")
   // State to track cheat button visibility
   const [cheatVisible, setCheatVisible] = useState(false)
+  const [showCatchReward, setShowCatchReward] = useState(false)
+  const [catchRewardPosition, setCatchRewardPosition] = useState({ x: 0, y: 0 })
 
   // Get state and actions from the store
   const {
@@ -77,6 +79,7 @@ export default function GameWithLevelSystem() {
 
     // Cat mode
     cats,
+    catchCat,
     toggleCat,
 
     // Actions
@@ -141,6 +144,14 @@ export default function GameWithLevelSystem() {
   // Handle selecting a hint option
   const handleSelectHint = (value: number) => {
     selectHintOption(value)
+  }
+
+  const handleCatchCat = (catId: string, position: { x: number, y: number }) => {
+    if (catchCat(catId)) {
+      setCatchRewardPosition(position)
+      setShowCatchReward(true)
+      setTimeout(() => setShowCatchReward(false), 1500)
+    }
   }
 
   return (
@@ -536,13 +547,44 @@ export default function GameWithLevelSystem() {
             cat.active && (
               <MagicalCat
                 key={cat.id}
+                id={cat.id}
                 color={cat.color}
-                onToggle={() => toggleCat(cat.id)}
+                onCatch={(e) => {
+                  const target = e.currentTarget
+                  if (target) {
+                    const rect = target.getBoundingClientRect()
+                    handleCatchCat(cat.id, {
+                      x: rect.left + rect.width / 2,
+                      y: rect.top
+                    })
+                  }
+                }}
               />
             )
           ))}
         </div>
       )}
+
+      {/* Catch Reward Animation */}
+      <AnimatePresence>
+        {showCatchReward && (
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 0, y: -50 }}
+            exit={{ opacity: 0 }}
+            className="fixed z-[10000] pointer-events-none"
+            style={{
+              left: catchRewardPosition.x,
+              top: catchRewardPosition.y,
+            }}
+          >
+            <div className="flex items-center text-yellow-400 font-bold text-lg">
+              <Coins className="w-5 h-5 mr-1" />
+              +105
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

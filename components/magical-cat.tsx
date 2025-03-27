@@ -6,13 +6,16 @@ import { motion } from "framer-motion"
 interface MagicalCatProps {
   color?: string
   onToggle?: () => void
+  onCatch?: (e: React.MouseEvent<SVGSVGElement>) => void
+  id: string
 }
 
-export function MagicalCat({ color = "#8b5cf6", onToggle }: MagicalCatProps) {
+export function MagicalCat({ color = "#8b5cf6", onToggle, onCatch, id }: MagicalCatProps) {
   const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
   const [target, setTarget] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
   const [isResting, setIsResting] = useState(false)
   const [facingLeft, setFacingLeft] = useState(false)
+  const [isBeingCaught, setIsBeingCaught] = useState(false)
 
   // Initialize position
   useEffect(() => {
@@ -80,20 +83,29 @@ export function MagicalCat({ color = "#8b5cf6", onToggle }: MagicalCatProps) {
     setTimeout(pickNewTarget, restDuration)
   }
 
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (onCatch) {
+      setIsBeingCaught(true)
+      onCatch(e)
+    }
+  }
+
   return (
     <motion.div
-      className="fixed z-[9999] pointer-events-none"
+      className="fixed z-[9999] pointer-events-auto"
       initial={{ x: position.x, y: position.y }}
       animate={{
         x: target.x,
         y: target.y,
+        scale: isBeingCaught ? [1, 1.2, 0] : 1,
+        opacity: isBeingCaught ? [1, 1, 0] : 1,
       }}
       transition={{
         type: "spring",
         damping: 20,
         stiffness: 100,
-        duration: 2,
-        onComplete: handleRest,
+        duration: isBeingCaught ? 0.5 : 2,
+        onComplete: isBeingCaught ? undefined : handleRest,
       }}
     >
       <motion.div
@@ -127,7 +139,7 @@ export function MagicalCat({ color = "#8b5cf6", onToggle }: MagicalCatProps) {
             xmlns="http://www.w3.org/2000/svg"
             className="drop-shadow-lg cursor-pointer"
             style={{ filter: `drop-shadow(0px 0px 8px ${color}80)` }}
-            onClick={onToggle}
+            onClick={handleClick}
           >
             {/* Cat body */}
             <ellipse cx="30" cy="28" rx="16" ry="12" fill={color} />
