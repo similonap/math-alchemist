@@ -258,7 +258,7 @@ export default function GameWithLevelSystem() {
                   {hiddenSide === "left" ? (
                     showHints ? (
                       // Show hint options instead of input field when hints are active
-                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect !== null} />
+                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect === true} />
                     ) : isCorrect === true ? (
                       // Show fixed box with correct answer when answer is correct
                       <div className="w-16 h-16 rounded-md bg-green-600 flex items-center justify-center text-white text-2xl font-bold border-2 border-green-400">
@@ -285,7 +285,7 @@ export default function GameWithLevelSystem() {
                           placeholder="?"
                           maxLength={2}
                           autoFocus
-                          disabled={isCorrect !== null}
+                          disabled={isCorrect === true}
                         />
                       </motion.div>
                     )
@@ -299,7 +299,7 @@ export default function GameWithLevelSystem() {
                   {hiddenSide === "right" ? (
                     showHints ? (
                       // Show hint options instead of input field when hints are active
-                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect !== null} />
+                      <HintOptions options={hintOptions} onSelect={handleSelectHint} isDisabled={isCorrect === true} />
                     ) : isCorrect === true ? (
                       // Show fixed box with correct answer when answer is correct
                       <div className="w-16 h-16 rounded-md bg-green-600 flex items-center justify-center text-white text-2xl font-bold border-2 border-green-400">
@@ -322,11 +322,11 @@ export default function GameWithLevelSystem() {
                           }}
                           className={`w-16 h-16 text-center text-2xl font-bold bg-indigo-800/50 border-purple-500/50 text-purple-200 ${
                             isCorrect === false ? "border-red-500 bg-red-900/30" : ""
-                          } ${isCorrect === true ? "border-green-500 bg-green-900/30" : ""}`}
+                          }`}
                           placeholder="?"
                           maxLength={2}
                           autoFocus
-                          disabled={isCorrect !== null}
+                          disabled={isCorrect === true}
                         />
                       </motion.div>
                     )
